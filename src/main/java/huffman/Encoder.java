@@ -2,7 +2,7 @@ package huffman;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -10,7 +10,7 @@ import huffman.lists.LinkedList;
 import huffman.lists.ListNode;
 
 public class Encoder {
-    public static void Encode(String filePath) {
+    public static void Encode(String filePath) throws UnsupportedEncodingException {
         byte[] bytes;
 
         try {
@@ -20,7 +20,7 @@ public class Encoder {
             return;
         }
 
-        String content = new String(bytes);
+        String content = new String(bytes, "ISO-8859-1");
 
         if (content.isEmpty()) {
             return;
@@ -48,14 +48,16 @@ public class Encoder {
 
         String path = "encoded-" + Paths.get(filePath).getFileName() + ".bin";
 
-        CreateEncodedFile(encodedContent, path);
+        CreateEncodedFile(encodedContent, path, root, content.length());
     }
 
-    private static void CreateEncodedFile(boolean[] encodedContent, String path) {
+    private static void CreateEncodedFile(boolean[] encodedContent, String path, Node<Character> root, int contentLength) {
         try {
-            FileOutputStream writer = new FileOutputStream(path);
-            WriteBooleans(writer, encodedContent);
-            writer.close();
+            FileOutputStream outputStream = new FileOutputStream(path);
+            WriteTrie(root, outputStream);
+            BinaryStdOut.write(contentLength, outputStream);
+            WriteEncodedContent(outputStream, encodedContent);
+            BinaryStdOut.close(outputStream);
         } catch (IOException e) {
             System.out.println("Ocorreu um erro ao criar o arquivo apos compressao: " + path);
             e.printStackTrace();
@@ -69,8 +71,6 @@ public class Encoder {
             String encodedChar = codes.FirstOrDefault((node) -> node.Value.Key.charValue() == character).Value.Value;
             builder.append(encodedChar);
         }
-
-        // TODO: encodar o mapeamento de char -> code no arquivo para poder fazer o decode depois
 
         char[] chars = builder.toString().toCharArray();
         boolean[] encodedContent = new boolean[chars.length];
@@ -86,14 +86,21 @@ public class Encoder {
         return encodedContent;
     }
 
+    private static void WriteTrie(Node<Character> node, FileOutputStream outputStream) {
+        if (node.isLeaf()) {
+            BinaryStdOut.write(true, outputStream);
+            BinaryStdOut.write(node.Value, 8, outputStream);
+            return;
+        }
+        BinaryStdOut.write(false, outputStream);
+        WriteTrie(node.Left, outputStream);
+        WriteTrie(node.Rigth, outputStream);
+    }
+
     // escreve os bools de byte em byte (8 em 8 bits) no arquivo
-    private static void WriteBooleans(OutputStream out, boolean[] array) throws IOException {
-        for (int i = 0; i < array.length; i += 8) {
-            int currentByte = 0;
-            for (int j = Math.min(i + 7, array.length - 1); j >= i; j--) {
-                currentByte = (currentByte << 1) | (array[j] ? 1 : 0);
-            }
-            out.write(currentByte);
+    private static void WriteEncodedContent(FileOutputStream outputStream, boolean[] encodedContent) throws IOException {
+        for (boolean bool : encodedContent) {
+            BinaryStdOut.write(bool, outputStream);
         }
     }
 

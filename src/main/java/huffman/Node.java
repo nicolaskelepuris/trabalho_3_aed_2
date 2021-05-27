@@ -16,6 +16,13 @@ public class Node<T> {
         Count = count;
     }
 
+    public Node(T value, int count, Node<T> left, Node<T> rigth){
+        Value = value;
+        Count = count;
+        Left = left;
+        Rigth = rigth;
+    }
+
     public Boolean isLeaf(){
         return Rigth == null && Left == null;
     }
