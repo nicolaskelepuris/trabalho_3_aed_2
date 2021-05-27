@@ -5,14 +5,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class Decoder {
-    public static void Decode(String filePath) throws IOException {
+    /**
+     * Decodifica um arquivo que foi codificado usando o algoritmo Huffman
+     * @param filePath - caminho do arquivo que sera decodificado
+     * @throws IOException
+     */
+    public static void decode(String filePath) throws IOException {
         FileInputStream inputStream = new FileInputStream(filePath);
 
         String path = "decoded-" + filePath.replace(".bin", "").replace("encoded-", "");
 
         FileOutputStream outputStream = new FileOutputStream(path);
 
-        Node<Character> root = ReadTrie(inputStream);
+        Node<Character> root = readTrie(inputStream);
 
         int length = BinaryStdIn.readInt(inputStream);
 
@@ -32,12 +37,12 @@ public class Decoder {
         BinaryStdOut.close(outputStream);
     }
 
-    private static Node<Character> ReadTrie(FileInputStream inputStream) {
+    private static Node<Character> readTrie(FileInputStream inputStream) {
         boolean isLeaf = BinaryStdIn.readBoolean(inputStream);
         if (isLeaf) {
             return new Node<Character>(BinaryStdIn.readChar(inputStream), -1);
         } else {
-            return new Node<Character>('\0', -1, ReadTrie(inputStream), ReadTrie(inputStream));
+            return new Node<Character>('\0', -1, readTrie(inputStream), readTrie(inputStream));
         }
     }
 }
