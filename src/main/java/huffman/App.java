@@ -1,17 +1,11 @@
 package huffman;
 
-/**
- * Hello world!
- */
 public final class App {
     private App() {
     }
-
-    /**
-     * Says hello to the world.
-     * @param args The arguments of the program.
-     */
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        Encoder.Encode("teste-txt.txt");
+        Encoder.Encode("teste-doc.docx");
+        Encoder.Encode("teste-img.png");
     }
 }
