@@ -54,7 +54,7 @@ public class Encoder {
         boolean[] encodedContent = encodeContent(content, codes);
 
         // adiciona extensão .bin para criar arquivo binario
-        String path = "encoded-" + Paths.get(filePath).getFileName() + ".bin";
+        String path = filePath + "-encoded.bin";
 
         // cria o arquivo codificado, primeiro escrevendo a trie e a quantidade de characters para posterior decodificacao
         // depois escreve o conteudo codificado

@@ -3,6 +3,7 @@ package huffman;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 public class Decoder {
     /**
@@ -13,7 +14,9 @@ public class Decoder {
     public static void decode(String filePath) throws IOException {
         FileInputStream inputStream = new FileInputStream(filePath);
 
-        String path = "decoded-" + filePath.replace(".bin", "").replace("encoded-", "");
+        String path = filePath.replace("-encoded.bin", "");
+
+        path = path.replace(Paths.get(path).getFileName().toString(), "") + "decoded-" + Paths.get(path).getFileName();
 
         FileOutputStream outputStream = new FileOutputStream(path);
 
